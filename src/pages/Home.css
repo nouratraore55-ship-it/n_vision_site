@@ -738,26 +738,39 @@
 @media (max-width: 640px) {
   /* Le texte d'intro et le bloc "N Vision / Packaging" se chevauchaient
      (tous les deux en position absolute avec un décalage fixe) dès que le
-     texte d'intro prenait plus de 2 lignes. On les empile normalement. */
+     texte d'intro prenait plus de 2 lignes. On les empile normalement,
+     chacun a sa place dans le flux, sans aucun decalage (top/left/right)
+     herite des regles "ordinateur" qui restait actif meme en relative. */
   .hero {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 28px;
-    padding: 96px 0 32px;
+    align-items: center;
+    gap: 24px;
+    padding: 96px 0 40px;
+    text-align: center;
   }
 
   .hero-top,
   .hero-content {
     position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
     z-index: 2;
     transform: none;
   }
 
-  /* Le nom "N Vision" doit rester bien visible et grand sur telephone,
-     comme sur ordinateur : on fixe une taille explicite au lieu de ne
-     compter que sur le clamp() (qui pouvait le faire paraitre petit une
-     fois la section hero repassee en hauteur automatique). */
+  /* Sur telephone, on simplifie l'ecran d'accueil : seul le nom "N Vision"
+     reste (bien grand, comme demande), sans les deux boutons "Demander un
+     devis" / "Voir nos services" puisque ces memes choix existent deja
+     plus bas sur la page — ca evite la confusion d'avoir tout entasse au
+     meme endroit. */
+  .hero-actions {
+    display: none;
+  }
+
   .hero-brand-name {
     font-size: 3.4rem;
   }

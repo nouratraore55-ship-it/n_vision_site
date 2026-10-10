@@ -762,13 +762,21 @@
     transform: none;
   }
 
-  /* Sur telephone, on simplifie l'ecran d'accueil : seul le nom "N Vision"
-     reste (bien grand, comme demande), sans les deux boutons "Demander un
-     devis" / "Voir nos services" puisque ces memes choix existent deja
-     plus bas sur la page — ca evite la confusion d'avoir tout entasse au
-     meme endroit. */
+  /* Sur telephone, on garde un seul bouton dans le hero : "Demander un
+     devis" (l'action principale). "Voir nos services" disparait ici car
+     deja accessible dans le menu — un seul choix clair, pas deux, pour que
+     ce soit net sans que l'ecran paraisse vide. */
   .hero-actions {
+    margin-top: 28px;
+  }
+
+  .hero-actions .btn-outline-light {
     display: none;
+  }
+
+  .hero-actions .btn-primary {
+    width: 100%;
+    max-width: 320px;
   }
 
   .hero-brand-name {

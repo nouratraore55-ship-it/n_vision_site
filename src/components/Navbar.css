@@ -1,0 +1,150 @@
+.navbar {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 1120px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(74, 50, 32, 0.12);
+  z-index: 100;
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+}
+
+.navbar-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.navbar-brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.navbar-brand-tag {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text);
+  opacity: 0.55;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.navbar-link {
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.92rem;
+  opacity: 0.8;
+  padding: 8px 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.navbar-link:hover {
+  opacity: 1;
+}
+
+.navbar-link.is-active {
+  opacity: 1;
+  border-bottom-color: var(--gold);
+}
+
+.navbar-cta {
+  padding: 9px 20px;
+  font-size: 0.88rem;
+  background: var(--brown);
+  color: var(--cream);
+}
+
+.navbar-cta:hover {
+  background: var(--ink);
+}
+
+.navbar-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.navbar-toggle span {
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  display: block;
+}
+
+@media (max-width: 860px) {
+  .navbar {
+    top: 12px;
+    width: calc(100% - 24px);
+  }
+
+  .navbar-inner {
+    height: 60px;
+  }
+
+  .navbar-toggle {
+    display: flex;
+  }
+
+  .navbar-links {
+    position: fixed;
+    top: 82px;
+    left: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 22px 22px;
+    gap: 16px;
+    display: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(74, 50, 32, 0.15);
+  }
+
+  .navbar-links.is-open {
+    display: flex;
+  }
+
+  .navbar-cta {
+    width: 100%;
+    text-align: center;
+  }
+}

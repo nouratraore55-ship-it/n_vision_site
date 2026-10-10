@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+:root {
+  --white: #FFFFFF;
+  --cream: #F7E4CC;
+  --cream-soft: #FCF3E3;
+  --champagne: #F3D4A8;
+  --peach: #F8AD5C;
+  --gold: #F4A044;
+  --brown: #4A3220;
+  --brown-soft: #8A6C50;
+  --ink: #2B211C;
+  --ink-soft: #241C17;
+
+  /* legacy aliases so existing rules pick up the new palette automatically */
+  --orange: var(--peach);
+  --orange-deep: var(--gold);
+  --rust: var(--gold);
+  --text: #5A514B;
+  --teal: var(--brown);
+  --teal-dark: var(--ink);
+
+  --gradient-warm: radial-gradient(120% 140% at 22% 18%, #FCEFD9 0%, #F8AD5C 32%, #F4A044 56%, #C9531F 80%, #4A3220 100%);
+
+  font-family: 'Poppins', sans-serif;
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: var(--white);
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--text);
+  margin: 0 0 0.5rem 0;
+}
+
+p {
+  line-height: 1.65;
+  margin: 0 0 1rem 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--peach);
+  color: var(--text);
+}
+
+.btn-primary:hover {
+  background: var(--gold);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(248, 173, 92, 0.35);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 2px solid var(--text);
+}
+
+.btn-secondary:hover {
+  background: var(--brown);
+  color: var(--cream);
+}
+
+.section {
+  padding: 72px 0;
+}
+
+.section-alt {
+  background: var(--champagne);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--rust);
+  margin-bottom: 10px;
+}
+
+.card {
+  background: var(--gradient-warm);
+  color: #fff;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(74, 50, 32, 0.2);
+  height: 100%;
+}
+
+.grid {
+  display: grid;
+  gap: 28px;
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 860px) {
+  .grid-3, .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

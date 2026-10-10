@@ -1,0 +1,45 @@
+.service-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.service-card .placeholder-img {
+  border-radius: 0;
+}
+
+.service-card-body {
+  padding: 22px 24px 26px;
+}
+
+.page-hero {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 128px 0 56px;
+}
+
+.page-hero h1 {
+  color: var(--cream);
+  font-size: 2.2rem;
+  max-width: 720px;
+}
+
+.page-hero-sub {
+  max-width: 620px;
+  opacity: 0.85;
+  font-size: 1.02rem;
+}
+
+.cta-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 720px) {
+  .cta-inline {
+    flex-direction: column;
+    text-align: center;
+  }
+}

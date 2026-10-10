@@ -1,0 +1,109 @@
+.dropzone-field {
+  margin-bottom: 16px;
+}
+
+.dropzone-label {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #3a3a3a;
+  margin-bottom: 8px;
+}
+
+.dropzone {
+  border: 2px dashed #d8cdb8;
+  border-radius: 16px;
+  background: var(--cream-soft);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.dropzone:hover {
+  border-color: var(--peach);
+}
+
+.dropzone-active {
+  border-color: var(--orange);
+  background: var(--champagne);
+}
+
+.dropzone-icon {
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.dropzone-text {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.dropzone-sub {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--text);
+  opacity: 0.75;
+}
+
+.dropzone-browse {
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.dropzone-hint {
+  margin: 8px 0 0;
+  font-size: 0.76rem;
+  color: var(--text);
+  opacity: 0.6;
+}
+
+.dropzone-filelist {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dropzone-filelist li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--champagne);
+  border-radius: 10px;
+  padding: 7px 10px 7px 14px;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.dropzone-filelist li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropzone-remove {
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  opacity: 0.6;
+}
+
+.dropzone-remove:hover {
+  opacity: 1;
+  color: var(--gold);
+}

@@ -1,0 +1,29 @@
+/* Volontairement l'inverse de la page Services (carte dégradé + texte
+   blanc) : ici carte blanche + texte coloré, pour bien distinguer les
+   deux pages. */
+.realisation-card {
+  background: #fff;
+  border: 1px solid rgba(74, 50, 32, 0.1);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(74, 50, 32, 0.1);
+}
+
+.realisation-card .placeholder-img {
+  border-radius: 0;
+}
+
+.realisation-body {
+  padding: 20px 22px 24px;
+}
+
+.realisation-body h3 {
+  margin-bottom: 6px;
+  color: var(--gold);
+}
+
+.realisation-body p {
+  font-size: 0.92rem;
+  color: var(--brown-soft);
+  margin: 0;
+}

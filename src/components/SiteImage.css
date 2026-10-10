@@ -1,0 +1,11 @@
+.site-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.site-img-loading {
+  background: var(--cream-soft, #f4ede0);
+}

@@ -753,6 +753,19 @@
     transform: none;
   }
 
+  /* Le nom "N Vision" doit rester bien visible et grand sur telephone,
+     comme sur ordinateur : on fixe une taille explicite au lieu de ne
+     compter que sur le clamp() (qui pouvait le faire paraitre petit une
+     fois la section hero repassee en hauteur automatique). */
+  .hero-brand-name {
+    font-size: 3.4rem;
+  }
+
+  .hero-brand-tag {
+    font-size: 1rem;
+    margin-top: 10px;
+  }
+
   /* La carte "Qu'est-ce que N Vision ?" restait en 2 colonnes et débordait
      de l'écran : on la repasse en 1 colonne, en plus compact sur mobile
      (moins de marges, texte plus petit) pour que ça reste agréable à lire

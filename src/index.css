@@ -79,7 +79,8 @@ a {
   color: var(--text);
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:active {
   background: var(--gold);
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(248, 173, 92, 0.35);
@@ -91,7 +92,8 @@ a {
   border: 2px solid var(--text);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-secondary:active {
   background: var(--brown);
   color: var(--cream);
 }

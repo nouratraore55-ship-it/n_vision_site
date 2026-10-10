@@ -138,7 +138,8 @@
   border: 2px solid #fff;
 }
 
-.btn-outline-light:hover {
+.btn-outline-light:hover,
+.btn-outline-light:active {
   background: #fff;
   color: var(--text);
 }
@@ -207,7 +208,8 @@
   transition: transform 0.15s ease;
 }
 
-.about-cta:hover {
+.about-cta:hover,
+.about-cta:active {
   transform: translateY(-1px);
 }
 
@@ -424,7 +426,8 @@
   transition: transform 0.15s ease, background 0.4s ease, color 0.4s ease;
 }
 
-.solution-card-btn:hover {
+.solution-card-btn:hover,
+.solution-card-btn:active {
   transform: translateY(-2px);
 }
 
@@ -486,7 +489,8 @@
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.solutions-arrow:hover {
+.solutions-arrow:hover,
+.solutions-arrow:active {
   background: var(--gold);
   border-color: var(--gold);
   color: #fff;
@@ -679,7 +683,8 @@
   transition: transform 0.15s ease;
 }
 
-.cta-card-btn:hover {
+.cta-card-btn:hover,
+.cta-card-btn:active {
   transform: translateY(-1px);
 }
 

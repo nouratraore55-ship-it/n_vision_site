@@ -73,7 +73,8 @@
   border-bottom: 2px solid transparent;
 }
 
-.navbar-link:hover {
+.navbar-link:hover,
+.navbar-link:active {
   opacity: 1;
 }
 
@@ -89,7 +90,8 @@
   color: var(--cream);
 }
 
-.navbar-cta:hover {
+.navbar-cta:hover,
+.navbar-cta:active {
   background: var(--ink);
 }
 

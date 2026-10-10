@@ -57,29 +57,7 @@ const SITE_IMAGE_GROUPS = [
     ],
   },
   {
-    section: "Page d'accueil — Nos solutions",
-    slots: [
-      { slot: 'home-service-cartons', label: 'Cartons & boîtes' },
-      { slot: 'home-service-sacs-kraft', label: 'Sacs kraft' },
-      { slot: 'home-service-sacs-plastique', label: 'Sacs plastique' },
-      { slot: 'home-service-papier-de-soie', label: 'Papier de soie' },
-      { slot: 'home-service-cartes-remerciement', label: 'Cartes de remerciement' },
-      { slot: 'home-service-autocollants', label: 'Autocollants' },
-    ],
-  },
-  {
-    section: "Page d'accueil — Nos catégories",
-    slots: [
-      { slot: 'home-category-cartons', label: 'Cartons' },
-      { slot: 'home-category-sacs-kraft', label: 'Sacs kraft' },
-      { slot: 'home-category-sacs-plastique', label: 'Sacs plastique' },
-      { slot: 'home-category-papier-de-soie', label: 'Papier de soie' },
-      { slot: 'home-category-cartes-remerciement', label: 'Cartes de remerciement' },
-      { slot: 'home-category-autocollants', label: 'Autocollants' },
-    ],
-  },
-  {
-    section: 'Page Services',
+    section: 'Nos services (page d\'accueil + page Services)',
     slots: [
       { slot: 'service-cartons-boites', label: 'Cartons & boîtes' },
       { slot: 'service-sacs-kraft', label: 'Sacs kraft' },

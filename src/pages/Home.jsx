@@ -22,7 +22,7 @@ const services = [
     em: 'boîtes',
     text: 'Simple ou double cannelure, aux dimensions exactes de votre produit.',
     chips: ['Simple cannelure', 'Double cannelure'],
-    slot: 'home-service-cartons',
+    slot: 'service-cartons-boites',
   },
   {
     n: '02',
@@ -31,7 +31,7 @@ const services = [
     em: 'kraft',
     text: 'Sacs en papier kraft, résistants et personnalisables, pour un emballage économique et écologique.',
     chips: ['Résistant', 'Écologique'],
-    slot: 'home-service-sacs-kraft',
+    slot: 'service-sacs-kraft',
   },
   {
     n: '03',
@@ -40,7 +40,7 @@ const services = [
     em: 'plastique',
     text: 'Sacs plastique adaptés à vos produits, pour la vente, le transport ou le stockage.',
     chips: ['Sur mesure', 'Résistant'],
-    slot: 'home-service-sacs-plastique',
+    slot: 'service-sacs-plastique',
   },
   {
     n: '04',
@@ -49,7 +49,7 @@ const services = [
     em: 'soie',
     text: "Papier de soie pour l'emballage cadeau, la protection ou la présentation de vos produits.",
     chips: ['Coloris variés', 'Présentation soignée'],
-    slot: 'home-service-papier-de-soie',
+    slot: 'service-papier-de-soie',
   },
   {
     n: '05',
@@ -58,7 +58,7 @@ const services = [
     em: 'remerciement',
     text: 'Cartes de remerciement personnalisées à glisser dans vos commandes, pour soigner l\'expérience client.',
     chips: ['Personnalisable', 'Petites séries'],
-    slot: 'home-service-cartes-remerciement',
+    slot: 'service-cartes-remerciement',
   },
   {
     n: '06',
@@ -67,7 +67,7 @@ const services = [
     em: 'Autocollants',
     text: 'Autocollants personnalisés pour tous vos produits et emballages, logo ou design au choix.',
     chips: ['Tous formats', 'Logo personnalisé'],
-    slot: 'home-service-autocollants',
+    slot: 'service-autocollants',
   },
 ];
 
@@ -195,7 +195,7 @@ export default function Home() {
       <section className="section solutions-band">
         <div className="container">
           <div className="section-heading">
-            <h2>Nos solutions</h2>
+            <h2>Nos services</h2>
             <Link to="/services" className="see-all">Voir tous les services →</Link>
           </div>
         </div>

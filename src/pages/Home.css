@@ -749,7 +749,8 @@
 
   .hero-top,
   .hero-content {
-    position: static;
+    position: relative;
+    z-index: 2;
     transform: none;
   }
 

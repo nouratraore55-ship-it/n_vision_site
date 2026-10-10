@@ -5,7 +5,7 @@ import { IconBox, IconTruck, IconCheckShield, IconHeadset, IconArrowRight } from
 import './Home.css';
 import '../pages/Realisations.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
 
 const features = [
   { Icon: IconBox, title: 'Sur mesure', text: 'Un emballage pensé pour votre produit et vos volumes.' },

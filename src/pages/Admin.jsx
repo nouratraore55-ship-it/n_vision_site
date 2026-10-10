@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './Admin.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
 const TOKEN_KEY = 'nvision_admin_token';
 
 const STATUS_LABELS = {

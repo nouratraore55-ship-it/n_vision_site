@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import SiteImage from '../components/SiteImage';
 import './Realisations.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
 
 const fallback = new Array(6).fill(null).map((_, i) => ({
   slot: `realisation-${i + 1}`,

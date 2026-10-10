@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import PlaceholderImage from './PlaceholderImage';
 import './SiteImage.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
 
 // Affiche une photo (ou, si autorisé, une vidéo) gérée depuis l'admin,
 // identifiée par "slot" (ex: "home-hero"). Si aucun fichier n'a encore été

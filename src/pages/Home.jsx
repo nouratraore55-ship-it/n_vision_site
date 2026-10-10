@@ -158,11 +158,6 @@ export default function Home() {
             <div className="about-bubble">
               <div className="about-bubble-left">
                 <h2 className="about-title">Qu'est-ce que <em>N Vision</em> ?</h2>
-                <Link to="/devis" className="about-cta">
-                  Demander un devis <IconArrowRight width={16} height={16} strokeWidth={2} />
-                </Link>
-              </div>
-              <div className="about-bubble-right">
                 <p className="about-text">
                   N Vision est une entreprise de <em>packaging</em> qui conçoit des solutions
                   d'emballage <em>sur mesure</em>{' '}
@@ -172,6 +167,9 @@ export default function Home() {
                   <span className="about-chip" aria-hidden="true"><IconTruck /></span>{' '}
                   avec un <em>accompagnement</em> dédié à chaque étape.
                 </p>
+                <Link to="/devis" className="about-cta">
+                  Demander un devis <IconArrowRight width={16} height={16} strokeWidth={2} />
+                </Link>
               </div>
             </div>
           </div>

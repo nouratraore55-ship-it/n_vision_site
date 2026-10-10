@@ -164,19 +164,14 @@
   background: var(--gradient-warm);
   border-radius: 36px;
   padding: 56px 48px;
-  max-width: 980px;
+  max-width: 640px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 36px;
-  align-items: stretch;
 }
 
 .about-bubble-left {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 22px;
 }
 

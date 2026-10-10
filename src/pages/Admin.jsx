@@ -126,6 +126,7 @@ export default function Admin() {
   const [imageStatus, setImageStatus] = useState({}); // { [slot]: 'uploading' | 'error' | undefined }
   const [imageError, setImageError] = useState({}); // { [slot]: message }
   const [imageVersion, setImageVersion] = useState({}); // { [slot]: timestamp } — force le rechargement de l'aperçu
+  const [confirmingDelete, setConfirmingDelete] = useState({}); // { [slot]: true } — demande de confirmation avant suppression
   const [imageMime, setImageMime] = useState({}); // { [slot]: mimeType } — pour savoir s'il faut afficher <img> ou <video>
   const [tab, setTab] = useState('devis'); // 'devis' | 'photos' | 'realisations' — sections séparées, pas mélangées
   const [realisationForm, setRealisationForm] = useState({}); // { [slot]: { title, description } }
@@ -274,6 +275,29 @@ export default function Admin() {
     } catch (err) {
       setImageStatus((prev) => ({ ...prev, [slot]: 'error' }));
       setImageError((prev) => ({ ...prev, [slot]: err.message === 'upload_failed' ? "L'envoi a échoué." : err.message }));
+    }
+  };
+
+  const deleteSiteImage = async (slot) => {
+    setConfirmingDelete((prev) => ({ ...prev, [slot]: false }));
+    setImageStatus((prev) => ({ ...prev, [slot]: 'deleting' }));
+    setImageError((prev) => ({ ...prev, [slot]: '' }));
+    try {
+      const res = await fetch(`${API_URL}/api/site-images/${slot}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok && res.status !== 404) throw new Error(data.error || 'delete_failed');
+      setImageStatus((prev) => ({ ...prev, [slot]: undefined }));
+      setImageVersion((prev) => ({ ...prev, [slot]: Date.now() }));
+      setImageMime((prev) => ({ ...prev, [slot]: undefined }));
+    } catch (err) {
+      setImageStatus((prev) => ({ ...prev, [slot]: 'error' }));
+      setImageError((prev) => ({
+        ...prev,
+        [slot]: err.message === 'delete_failed' ? "La suppression a échoué." : err.message,
+      }));
     }
   };
 
@@ -447,16 +471,42 @@ export default function Admin() {
                       </div>
                       <div className="admin-image-body">
                         <span className="admin-image-label">{label}</span>
-                        <label className="btn btn-secondary admin-image-upload">
-                          {imageStatus[slot] === 'uploading' ? 'Envoi…' : 'Changer la photo'}
-                          <input
-                            type="file"
-                            accept={accept || IMAGE_ACCEPT}
-                            hidden
-                            disabled={imageStatus[slot] === 'uploading'}
-                            onChange={(e) => uploadSiteImage(slot, e.target.files?.[0])}
-                          />
-                        </label>
+                        <div className="admin-image-actions">
+                          <label className="btn btn-secondary admin-image-upload">
+                            {imageStatus[slot] === 'uploading' ? 'Envoi…' : 'Changer la photo'}
+                            <input
+                              type="file"
+                              accept={accept || IMAGE_ACCEPT}
+                              hidden
+                              disabled={imageStatus[slot] === 'uploading' || imageStatus[slot] === 'deleting'}
+                              onChange={(e) => uploadSiteImage(slot, e.target.files?.[0])}
+                            />
+                          </label>
+                          {!confirmingDelete[slot] ? (
+                            <button
+                              type="button"
+                              className="btn btn-secondary admin-image-delete"
+                              disabled={imageStatus[slot] === 'uploading' || imageStatus[slot] === 'deleting'}
+                              onClick={() => setConfirmingDelete((prev) => ({ ...prev, [slot]: true }))}
+                            >
+                              {imageStatus[slot] === 'deleting' ? 'Suppression…' : 'Supprimer la photo'}
+                            </button>
+                          ) : (
+                            <span className="admin-image-confirm">
+                              Supprimer ?
+                              <button type="button" className="btn btn-danger" onClick={() => deleteSiteImage(slot)}>
+                                Oui
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => setConfirmingDelete((prev) => ({ ...prev, [slot]: false }))}
+                              >
+                                Annuler
+                              </button>
+                            </span>
+                          )}
+                        </div>
                         {VIDEO_ALLOWED_SLOTS.has(slot) && (
                           <p className="admin-images-hint" style={{ margin: 0 }}>
                             Accepte aussi une vidéo courte (MP4/WebM, 30 Mo max) — elle sera lue en
@@ -500,16 +550,42 @@ export default function Admin() {
                     />
                   </div>
                   <div className="admin-image-body admin-realisation-body">
-                    <label className="btn btn-secondary admin-image-upload">
-                      {imageStatus[slot] === 'uploading' ? 'Envoi…' : 'Changer la photo'}
-                      <input
-                        type="file"
-                        accept="image/png,image/jpeg,image/webp"
-                        hidden
-                        disabled={imageStatus[slot] === 'uploading'}
-                        onChange={(e) => uploadSiteImage(slot, e.target.files?.[0])}
-                      />
-                    </label>
+                    <div className="admin-image-actions">
+                      <label className="btn btn-secondary admin-image-upload">
+                        {imageStatus[slot] === 'uploading' ? 'Envoi…' : 'Changer la photo'}
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          hidden
+                          disabled={imageStatus[slot] === 'uploading' || imageStatus[slot] === 'deleting'}
+                          onChange={(e) => uploadSiteImage(slot, e.target.files?.[0])}
+                        />
+                      </label>
+                      {!confirmingDelete[slot] ? (
+                        <button
+                          type="button"
+                          className="btn btn-secondary admin-image-delete"
+                          disabled={imageStatus[slot] === 'uploading' || imageStatus[slot] === 'deleting'}
+                          onClick={() => setConfirmingDelete((prev) => ({ ...prev, [slot]: true }))}
+                        >
+                          {imageStatus[slot] === 'deleting' ? 'Suppression…' : 'Supprimer la photo'}
+                        </button>
+                      ) : (
+                        <span className="admin-image-confirm">
+                          Supprimer ?
+                          <button type="button" className="btn btn-danger" onClick={() => deleteSiteImage(slot)}>
+                            Oui
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={() => setConfirmingDelete((prev) => ({ ...prev, [slot]: false }))}
+                          >
+                            Annuler
+                          </button>
+                        </span>
+                      )}
+                    </div>
                     {imageStatus[slot] === 'error' && <p className="admin-error">{imageError[slot]}</p>}
 
                     <label className="admin-realisation-field">

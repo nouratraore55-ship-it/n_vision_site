@@ -414,3 +414,41 @@
     align-items: flex-start;
   }
 }
+
+.admin-image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-image-upload,
+.admin-image-delete {
+  flex: 1 1 auto;
+}
+
+.admin-image-delete {
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 8px 14px;
+  background: none;
+}
+
+.admin-image-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.btn-danger {
+  background: #B3261E;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+.btn-danger:hover {
+  background: #8E1E18;
+}

@@ -9,7 +9,7 @@ const PRODUIT_OPTIONS = [
   'Sacs kraft',
   'Sacs plastique',
   'Papier de soie',
-  'Cartes de remerciement',
+  'Cartes de remerciement / Cartes de visite',
   'Autocollants',
 ];
 

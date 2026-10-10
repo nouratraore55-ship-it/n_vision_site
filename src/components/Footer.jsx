@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="footer-brand">
           <img src={logo} alt="N Vision" className="footer-logo" />
           <span>N Vision</span>
-          <p>Cartons, sacs kraft et plastique, papier de soie, cartes de remerciement et autocollants personnalisés pour votre entreprise.</p>
+          <p>Cartons, sacs kraft et plastique, papier de soie, cartes de remerciement, cartes de visite et autocollants personnalisés pour votre entreprise.</p>
           {/* Remplacez ces liens "#" par les vraies pages sociales de N Vision. */}
           <div className="footer-social">
             <a href="#" aria-label="Facebook"><IconFacebook width={18} height={18} strokeWidth={1.6} /></a>

@@ -63,7 +63,7 @@ const SITE_IMAGE_GROUPS = [
       { slot: 'service-sacs-kraft', label: 'Sacs kraft' },
       { slot: 'service-sacs-plastique', label: 'Sacs plastique' },
       { slot: 'service-papier-de-soie', label: 'Papier de soie' },
-      { slot: 'service-cartes-remerciement', label: 'Cartes de remerciement' },
+      { slot: 'service-cartes-remerciement', label: 'Cartes de remerciement / Cartes de visite' },
       { slot: 'service-autocollants', label: 'Autocollants' },
     ],
   },

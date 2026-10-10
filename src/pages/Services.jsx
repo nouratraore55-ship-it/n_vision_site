@@ -24,8 +24,8 @@ const services = [
     slot: 'service-papier-de-soie',
   },
   {
-    title: 'Cartes de remerciement',
-    text: 'Cartes de remerciement personnalisées à glisser dans vos commandes, pour soigner l\'expérience client.',
+    title: 'Cartes de remerciement / Cartes de visite',
+    text: 'Cartes de remerciement et cartes de visite personnalisées à glisser dans vos commandes ou pour votre identité professionnelle.',
     slot: 'service-cartes-remerciement',
   },
   {

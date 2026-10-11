@@ -160,12 +160,14 @@
 }
 
 
+/* Meme largeur/dimension que la carte "Comment ca marche" (.steps-bubble) :
+   la carte prend toute la largeur du container, comme elle, au lieu de
+   rester petite et centree. Sur telephone, la media query plus bas dans
+   ce fichier reprend deja sa propre taille compacte (inchangee). */
 .about-bubble {
   background: var(--gradient-warm);
-  border-radius: 36px;
-  padding: 56px 48px;
-  max-width: 640px;
-  margin: 0 auto;
+  border-radius: 40px;
+  padding: 56px 44px;
 }
 
 .about-bubble-left {
@@ -173,6 +175,10 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 22px;
+  /* Le texte reste a une largeur confortable a lire, centre dans la
+     carte desormais plus large. */
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .about-title {

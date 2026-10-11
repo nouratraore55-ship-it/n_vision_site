@@ -212,7 +212,6 @@ export default function Home() {
                 <span className="solution-card-number">{s.n}</span>
               </div>
               <div className="solution-card-body">
-                <span className="solution-card-tag">{s.tag}</span>
                 <h3>{s.title}<em>{s.em}</em></h3>
                 <span className="solution-card-divider" />
                 <p>{s.text}</p>

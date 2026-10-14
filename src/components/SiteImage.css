@@ -1,7 +1,20 @@
 .site-img {
   display: block;
   width: 100%;
-  height: 100%;
+  /* Pas de height:100% ici : dans une grille de cartes (CSS Grid "stretch"),
+     la carte peut recevoir une hauteur imposee plus grande que prevu (pour
+     s'aligner sur la carte la plus haute de la ligne). Avec height:100% sur
+     une vraie <img>, l'image remplissait alors TOUTE cette hauteur au lieu
+     de respecter son format (aspect-ratio), et poussait le titre/texte en
+     dehors de la carte (coupes par overflow:hidden) : les noms et
+     descriptions paraissaient "disparus" sur Nos services / Nos
+     realisations des qu'une vraie photo etait mise en ligne. height:auto
+     laisse l'aspect-ratio (defini en inline-style selon le "ratio" demande)
+     determiner seul la hauteur, exactement comme le fait deja le visuel de
+     remplacement (PlaceholderImage) qui n'a jamais eu ce probleme.
+     Exception : .hero-bg (la photo plein ecran du hero) redefinit sa
+     propre regle height:100% et n'est donc pas concernee. */
+  height: auto;
   border-radius: 18px;
   object-fit: cover;
 }

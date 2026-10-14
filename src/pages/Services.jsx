@@ -57,7 +57,6 @@ export default function Services() {
                 <SiteImage slot={s.slot} label={`Photo — ${s.title}`} />
                 <div className="service-card-body">
                   <h3>{s.title}</h3>
-                  <p>{s.text}</p>
                 </div>
               </div>
             ))}

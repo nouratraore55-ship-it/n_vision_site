@@ -8,3 +8,8 @@
 }
 .nv .ft-social a:hover { background: var(--cream); }
 .nv .copy a:hover { color: var(--ruby); }
+
+.nv .ft-brand strong { white-space: nowrap; }
+@media (max-width: 560px) {
+  .nv .ft-brand { flex-wrap: wrap; }
+}

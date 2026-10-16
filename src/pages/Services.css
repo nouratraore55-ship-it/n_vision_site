@@ -1,6 +1,11 @@
 .service-card {
   padding: 0;
   overflow: hidden;
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid var(--sand);
+  border-radius: 12px;
+  box-shadow: 0 10px 26px rgba(62, 31, 32, 0.08);
 }
 
 .service-card .placeholder-img {
@@ -16,6 +21,13 @@
 
 .service-card-body h3 {
   margin: 0;
+  color: var(--brownie);
+  font-size: 1.25rem;
+  text-wrap: balance;
+}
+
+.page-hero .eyebrow {
+  color: var(--cobblestone);
 }
 
 .page-hero {
@@ -54,9 +66,7 @@
 .service-visual {
   position: relative;
   aspect-ratio: 4 / 3;
-  border-radius: 14px;
   overflow: hidden;
-  margin-bottom: 16px;
 }
 .service-visual .illu,
 .service-visual .service-photo {

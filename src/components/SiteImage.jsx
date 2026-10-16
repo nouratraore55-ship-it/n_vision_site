@@ -5,7 +5,7 @@ import './SiteImage.css';
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
 
 // Affiche une photo (ou, si autorisé, une vidéo) gérée depuis l'admin,
-// identifiée par "slot" (ex: "home-hero"). Si aucun fichier n'a encore été
+// identifiée par "slot" (ex: "accueil-hero"). Si aucun fichier n'a encore été
 // mis en ligne pour cet emplacement, on retombe automatiquement sur le
 // visuel de remplacement (PlaceholderImage).
 //

@@ -25,3 +25,7 @@
   .nv .hero-in { padding-top: 110px; }
   .nv .vals-photo, .nv .vals-ph { aspect-ratio: 4 / 3; max-width: 420px; }
 }
+
+/* Le logo du hero a une taille connue avant même d'être chargé : il apparaît
+   directement à sa place, sans glisser du bas vers le haut. */
+.nv .hero-mark { aspect-ratio: 600 / 497; height: auto; }

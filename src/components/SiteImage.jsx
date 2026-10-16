@@ -52,7 +52,9 @@ export default function SiteImage({ slot, label, ratio = '4 / 3', className = ''
   }
 
   if (allowVideo && mimeType === null) {
-    // Vérification du type de fichier en cours — évite un flash d'image cassée.
+    // Vérification du type de fichier en cours : on montre déjà le visuel par
+    // défaut (ex : logo animé du hero), pour qu'il ne démarre pas en retard.
+    if (fallback !== undefined) return fallback;
     return <div className={`site-img site-img-loading ${className}`} style={style} />;
   }
 

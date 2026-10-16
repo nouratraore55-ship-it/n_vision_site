@@ -27,3 +27,25 @@
   color: var(--brown-soft);
   margin: 0;
 }
+
+.realisation-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--cream);
+}
+.realisation-img-empty {
+  display: grid;
+  place-items: center;
+  color: var(--brown-soft);
+  font-size: 0.85rem;
+  border: 1.5px dashed var(--cobblestone);
+}
+.realisation-lieu {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brown-soft);
+  margin-bottom: 0.4rem;
+}

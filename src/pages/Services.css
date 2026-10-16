@@ -19,13 +19,13 @@
 }
 
 .page-hero {
-  background: var(--ink);
-  color: var(--cream);
-  padding: 128px 0 56px;
+  background: radial-gradient(circle at 78% 20%, var(--ruby-soft), var(--ruby-deep) 75%);
+  color: var(--creme);
+  padding: 72px 0 56px;
 }
 
 .page-hero h1 {
-  color: var(--cream);
+  color: var(--creme);
   font-size: 2.2rem;
   max-width: 720px;
 }
@@ -49,4 +49,20 @@
     flex-direction: column;
     text-align: center;
   }
+}
+
+.service-visual {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.service-visual .illu,
+.service-visual .service-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

@@ -19,7 +19,7 @@
   font-weight: 600;
   color: var(--ink);
   cursor: pointer;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--fd);
 }
 
 .faq-icon {

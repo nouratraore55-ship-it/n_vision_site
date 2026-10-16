@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import logo from '../assets/n_vision_logo.png';
+import { Link, NavLink } from 'react-router-dom';
+import logoCreme from '../assets/logo-creme.png';
+import logoRuby from '../assets/logo-ruby.png';
 import './Navbar.css';
 
 const links = [
@@ -10,46 +11,51 @@ const links = [
   { to: '/faq', label: 'FAQ' },
 ];
 
-export default function Navbar() {
+// overlay = barre en verre posée sur le hero de l'accueil (texte crème).
+// Sinon : barre blanche classique, en haut des autres pages.
+export default function Navbar({ overlay = false }) {
   const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
 
   return (
-    <header className="navbar">
-      <div className="container navbar-inner">
-        <NavLink to="/" className="navbar-brand" onClick={() => setOpen(false)}>
-          <img src={logo} alt="N Vision" className="navbar-logo" />
-          <span className="navbar-brand-text">
-            <span className="navbar-brand-name">N Vision</span>
-            <span className="navbar-brand-tag">Packaging</span>
-          </span>
-        </NavLink>
+    <header className={`nvbar ${overlay ? 'nvbar-overlay' : 'nvbar-solid'}`}>
+      <div className="nvbar-wrap">
+        <nav className="nvbar-inner" aria-label="Navigation principale">
+          <Link to="/" className="nvbar-brand" onClick={close}>
+            <img src={overlay ? logoCreme : logoRuby} alt="Logo N Vision" />
+            <span>N VISION</span>
+          </Link>
 
-        <nav className={`navbar-links ${open ? 'is-open' : ''}`}>
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.to === '/'}
-              className={({ isActive }) => `navbar-link ${isActive ? 'is-active' : ''}`}
-              onClick={() => setOpen(false)}
+          <div className="nvbar-links">
+            {links.map((l) => (
+              <NavLink key={l.to} to={l.to} end={l.to === '/'} className={({ isActive }) => (isActive ? 'is-active' : '')}>
+                {l.label}
+              </NavLink>
+            ))}
+          </div>
+
+          <div className="nvbar-right">
+            <Link to="/devis" className="nvbar-cta">Demander un devis</Link>
+            <button
+              type="button"
+              className="nvbar-burger"
+              aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
             >
-              {link.label}
-            </NavLink>
-          ))}
-          <NavLink to="/devis" className="btn btn-primary navbar-cta" onClick={() => setOpen(false)}>
-            Demander un devis
-          </NavLink>
+              <svg viewBox="0 0 24 24"><path d={open ? 'M6 6l12 12M18 6L6 18' : 'M4 7h16M4 12h16M4 17h16'} /></svg>
+            </button>
+          </div>
         </nav>
 
-        <button
-          className="navbar-toggle"
-          aria-label="Ouvrir le menu"
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+        {open && (
+          <div className="nvbar-mobile">
+            {links.map((l) => (
+              <NavLink key={l.to} to={l.to} end={l.to === '/'} onClick={close}>{l.label}</NavLink>
+            ))}
+            <Link to="/devis" onClick={close} className="nvbar-mobile-cta">Demander un devis</Link>
+          </div>
+        )}
       </div>
     </header>
   );

@@ -1,271 +1,218 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 import SiteImage from '../components/SiteImage';
-import { IconBox, IconTruck, IconCheckShield, IconHeadset, IconArrowRight } from '../components/Icons';
+import { IlluPackaging, IlluSacs, IlluPapier, IlluCartes } from '../components/Illustrations';
+import logoCreme from '../assets/logo-creme.png';
+import realisationBstp from '../assets/realisation-bstp.jpg';
+import '../nv.css';
 import './Home.css';
-import '../pages/Realisations.css';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
 
-const features = [
-  { Icon: IconBox, title: 'Sur mesure', text: 'Un emballage pensé pour votre produit et vos volumes.' },
-  { Icon: IconTruck, title: 'Délais tenus', text: 'Une production organisée pour livrer à temps.' },
-  { Icon: IconCheckShield, title: 'Qualité constante', text: 'Des matériaux fiables, contrôlés à chaque étape.' },
-  { Icon: IconHeadset, title: 'Accompagnement', text: 'Un interlocuteur dédié du devis à la livraison.' },
-];
+const Arrow = () => (
+  <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8" /></svg>
+);
+const ImgIcon = () => (
+  <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" strokeWidth="1.5" /><circle cx="9" cy="10" r="2" fill="none" strokeWidth="1.5" /><path d="M3 17l5-4 4 3 3-2 6 4" fill="none" strokeWidth="1.5" /></svg>
+);
 
-const services = [
+const SERVICES = [
   {
-    n: '01',
-    tag: 'Cartons',
-    title: 'Cartons ',
-    em: 'boîtes',
-    text: 'Simple ou double cannelure, aux dimensions exactes de votre produit.',
-    chips: ['Simple cannelure', 'Double cannelure'],
-    slot: 'service-cartons-boites',
+    slot: 'service-packaging',
+    title: ['Packaging', 'personnalisé'],
+    chips: ['Votre logo', 'Vos couleurs', 'Vos formats', 'Vos finitions'],
+    text: 'Choisissez le support, ajoutez votre identité : nous imprimons votre marque sur tout ce qui accompagne vos produits.',
+    Illu: IlluPackaging,
   },
   {
-    n: '02',
-    tag: 'Sacs kraft',
-    title: 'Sacs ',
-    em: 'kraft',
-    text: 'Sacs en papier kraft, résistants et personnalisables, pour un emballage économique et écologique.',
-    chips: ['Résistant', 'Écologique'],
-    slot: 'service-sacs-kraft',
+    slot: 'service-sacs',
+    title: ['Sacs', '& cartons'],
+    chips: ['Kraft', 'Plastique', 'Zip'],
+    text: 'Kraft, plastique ou zip, imprimés à votre logo.',
+    Illu: IlluSacs,
   },
   {
-    n: '03',
-    tag: 'Sacs plastique',
-    title: 'Sacs ',
-    em: 'plastique',
-    text: 'Sacs plastique adaptés à vos produits, pour la vente, le transport ou le stockage.',
-    chips: ['Sur mesure', 'Résistant'],
-    slot: 'service-sacs-plastique',
-  },
-  {
-    n: '04',
-    tag: 'Papier de soie',
-    title: 'Papier de ',
-    em: 'soie',
-    text: "Papier de soie pour l'emballage cadeau, la protection ou la présentation de vos produits.",
-    chips: ['Coloris variés', 'Présentation soignée'],
     slot: 'service-papier-de-soie',
+    title: ['Papier', 'de soie'],
+    chips: ['Motifs', 'Couleurs'],
+    text: 'Imprimé à vos motifs et couleurs.',
+    Illu: IlluPapier,
   },
   {
-    n: '05',
-    tag: 'Cartes de remerciement / Cartes de visite',
-    title: 'Cartes de remerciement / ',
-    em: 'Cartes de visite',
-    text: 'Cartes de remerciement et cartes de visite personnalisées à glisser dans vos commandes ou pour votre identité professionnelle.',
-    chips: ['Personnalisable', 'Petites séries'],
-    slot: 'service-cartes-remerciement',
-  },
-  {
-    n: '06',
-    tag: 'Autocollants',
-    title: '',
-    em: 'Autocollants',
-    text: 'Autocollants personnalisés pour tous vos produits et emballages, logo ou design au choix.',
-    chips: ['Tous formats', 'Logo personnalisé'],
-    slot: 'service-autocollants',
+    slot: 'service-cartes',
+    title: ['Cartes', '& stickers'],
+    chips: ['Cartes de visite', 'Cartes de remerciement', 'Stickers'],
+    text: 'Cartes de visite, cartes de remerciement et autocollants à votre logo.',
+    Illu: IlluCartes,
   },
 ];
 
-const projetsFallback = [
-  { slot: 'realisation-1', title: 'Projet 1', description: 'Description courte du projet, du besoin client et de la solution apportée.' },
-  { slot: 'realisation-2', title: 'Projet 2', description: 'Description courte du projet, du besoin client et de la solution apportée.' },
-  { slot: 'realisation-3', title: 'Projet 3', description: 'Description courte du projet, du besoin client et de la solution apportée.' },
+const STEPS = [
+  { n: '01', pos: 'down', title: 'Votre demande', text: "Vous remplissez le questionnaire de devis : type d'emballage, quantité, logo et idées de design." },
+  { n: '02', pos: 'up', title: 'Conception', text: 'Nous préparons une proposition de design et un devis adaptés à vos besoins et à votre budget.' },
+  { n: '03', pos: 'down', title: 'Validation', text: "Vous recevez le devis par lien, vous l'acceptez et nous lançons la production." },
+  { n: '04', pos: 'up', title: 'Livraison', text: "Vos emballages personnalisés sont fabriqués avec soin puis livrés, prêts à l'emploi." },
 ];
 
-const steps = [
-  { n: '01', title: 'Remplissez le questionnaire', text: 'Quelques questions sur votre produit et vos besoins.' },
-  { n: '02', title: 'Recevez votre devis', text: 'Nous étudions votre demande et vous envoyons une offre chiffrée.' },
-  { n: '03', title: 'Validez et recevez', text: 'Vous acceptez le devis, on lance la production et la livraison.' },
+// Affichée tant qu'aucune réalisation n'a été ajoutée depuis l'admin.
+const DEFAULT_REALISATIONS = [
+  {
+    id: 'defaut-bstp',
+    title: 'Carte de visite entreprise',
+    lieu: 'Abidjan, CI',
+    description: "Refonte du design et impression des cartes de visite de la BSTP, aux couleurs de l'institution.",
+    src: realisationBstp,
+  },
 ];
+
+function HeroFallback() {
+  return <img className="hero-mark" src={logoCreme} alt="" aria-hidden="true" />;
+}
+
+function ServiceCard({ s, active, onActivate }) {
+  const { Illu } = s;
+  return (
+    <div
+      className={`svc-card ${active ? 'active' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-expanded={active}
+      onMouseEnter={() => { if (window.matchMedia('(hover: hover)').matches) onActivate(); }}
+      onFocus={onActivate}
+      onClick={onActivate}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onActivate(); } }}
+    >
+      <SiteImage slot={s.slot} label={s.title.join(' ')} ratio={null} className="svc-photo" fallback={<Illu />} />
+      <div className="ov" />
+      <div className="chips">{s.chips.map((c) => <span key={c}>{c}</span>)}</div>
+      <Link to="/services" className="arr" aria-label={`Voir le service ${s.title.join(' ')}`} onClick={(e) => e.stopPropagation()}>
+        <Arrow />
+      </Link>
+      <div className="cin">
+        <h3>{s.title[0]} <br />{s.title[1]}</h3>
+        <p>{s.text}</p>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
-  const solutionsRef = useRef(null);
-  const [activeSolution, setActiveSolution] = useState(0);
-  const [projets, setProjets] = useState(projetsFallback);
+  const [activeSvc, setActiveSvc] = useState(0);
+  const [realisations, setRealisations] = useState(DEFAULT_REALISATIONS);
+  const [wi, setWi] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
     fetch(`${API_URL}/api/realisations`)
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data) => {
-        if (!cancelled && Array.isArray(data) && data.length) setProjets(data.slice(0, 3));
+        if (cancelled || !Array.isArray(data) || !data.length) return;
+        setRealisations(
+          data.map((r) => ({
+            ...r,
+            src: r.hasImage ? `${API_URL}/api/site-images/${r.id}/file?v=${encodeURIComponent(r.updatedAt || '')}` : null,
+          }))
+        );
       })
       .catch(() => {
-        // silencieux : les projets par défaut restent affichés
+        // silencieux : la réalisation par défaut reste affichée
       });
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
-  const scrollSolutions = (dir) => {
-    const el = solutionsRef.current;
-    if (!el) return;
-    const card = el.querySelector('.solution-card');
-    const step = card ? card.offsetWidth + 24 : 320;
-    el.scrollBy({ left: dir * step, behavior: 'smooth' });
-  };
-
-  const handleSolutionsScroll = () => {
-    const el = solutionsRef.current;
-    if (!el) return;
-    const card = el.querySelector('.solution-card');
-    const step = card ? card.offsetWidth + 24 : 320;
-    const idx = Math.round(el.scrollLeft / step);
-    setActiveSolution(Math.max(0, Math.min(idx, services.length - 1)));
-  };
+  const work = realisations[wi % realisations.length];
 
   return (
-    <>
-      <section className="hero-stage">
-        <div className="hero">
-          <SiteImage
-            slot="home-hero"
-            label="Photo hero — atelier, produits ou entrepôt"
-            ratio="1 / 1"
-            className="hero-bg"
-            allowVideo
-          />
-          <div className="hero-overlay" />
-
-          <div className="container hero-top">
-            <p className="hero-topline">
-              Votre emballage mérite d'être fiable. Nous concevons des solutions
-              qui protègent vos produits et donnent une bonne image à votre marque.
-              {/* Remplacez cette phrase par le slogan officiel dès qu'il est prêt. */}
-            </p>
-          </div>
-
-          <div className="container hero-content">
-            <div className="hero-brand">
-              <h1 className="hero-brand-name">N Vision</h1>
-              <span className="hero-brand-tag">Packaging</span>
+    <div className="nv">
+      {/* HERO */}
+      <header className="hero">
+        <div className="ph dark" />
+        <SiteImage slot="home-hero" label="N Vision" ratio={null} allowVideo className="hero-photo" fallback={<HeroFallback />} />
+        <Navbar overlay />
+        <div className="hero-in wrap">
+          <div className="hero-body">
+            <div>
+              <h1>Un packaging<br />à votre image</h1>
+              <p>Votre logo, vos couleurs, vos formats : nous personnalisons chaque emballage pour qu'il porte votre marque, du sac kraft au sticker.</p>
+              <div className="cta">
+                <Link to="/devis" className="btn btn-light">Demander un devis</Link>
+                <a href="#realisations" className="link">Voir nos réalisations</a>
+              </div>
             </div>
-            <div className="hero-actions">
-              <Link to="/devis" className="btn btn-primary">Demander un devis</Link>
-              <Link to="/services" className="btn btn-outline-light">Voir nos services</Link>
+            <div className="glass">
+              <div className="top">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 20l4-1L19 8l-3-3L5 16l-1 4z" /><path d="M14 7l3 3" /></svg>
+                <Link to="/services" className="circ" aria-label="Voir les services"><Arrow /></Link>
+              </div>
+              <h3>100 % personnalisable</h3>
+              <p>Logo, couleurs et finitions sur vos sacs, papier de soie, cartes et autocollants.</p>
             </div>
           </div>
         </div>
+      </header>
 
-        <div className="about-reveal">
-          <div className="container">
-            <div className="about-bubble">
-              <div className="about-bubble-left">
-                <h2 className="about-title">Qu'est-ce que <em>N Vision</em> ?</h2>
-                <p className="about-text">
-                  N Vision est une entreprise de <em>packaging</em> qui conçoit des solutions
-                  d'emballage <em>sur mesure</em>{' '}
-                  <span className="about-chip" aria-hidden="true"><IconBox /></span>{' '}
-                  pour les entreprises de tous secteurs, du carton standard aux volumes
-                  industriels complets{' '}
-                  <span className="about-chip" aria-hidden="true"><IconTruck /></span>{' '}
-                  avec un <em>accompagnement</em> dédié à chaque étape.
-                </p>
-                <Link to="/devis" className="about-cta">
-                  Demander un devis <IconArrowRight width={16} height={16} strokeWidth={2} />
-                </Link>
+      {/* VALEURS */}
+      <section id="apropos">
+        <div className="wrap">
+          <div className="vals-top">
+            <span className="tag">Valeurs</span>
+            <div className="vals-list">
+              <div>Packaging personnalisé <b>01</b></div>
+              <div>Logo &amp; couleurs de marque <b>02</b></div>
+            </div>
+          </div>
+          <div className="vals-head">
+            <h2>Un emballage <span className="soft">qui vous</span><br />ressemble</h2>
+            <Link to="/devis" className="btn btn-dark">Demander un devis</Link>
+          </div>
+          <div className="vals-grid">
+            <SiteImage
+              slot="home-valeurs"
+              label="N Vision"
+              ratio={null}
+              className="vals-photo"
+              fallback={<div className="ph vals-ph"><ImgIcon /></div>}
+            />
+            <div className="feats">
+              <div className="feat">
+                <div className="ico"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z" /></svg></div>
+                <h3>Le souci du détail</h3>
+                <p>Chaque couleur, chaque finition est choisie pour que votre emballage donne envie d'être partagé.</p>
+              </div>
+              <div className="feat">
+                <div className="ico"><svg viewBox="0 0 24 24"><path d="M9 15l6-6M10 6l1-1a4 4 0 016 6l-1 1M14 18l-1 1a4 4 0 01-6-6l1-1" /></svg></div>
+                <h3>Un vrai accompagnement</h3>
+                <p>Nous partons de votre logo et de vos idées pour proposer un design qui fonctionne en production.</p>
+              </div>
+              <div className="feat">
+                <div className="ico"><svg viewBox="0 0 24 24"><path d="M5 19c8 0 14-6 14-14C11 5 5 11 5 19zM5 19l7-7" /></svg></div>
+                <h3>Matières responsables</h3>
+                <p>Kraft recyclable et papiers de qualité pour un emballage solide et plus respectueux.</p>
+              </div>
+              <div className="feat">
+                <div className="ico"><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6" /></svg></div>
+                <h3>Des designs uniques</h3>
+                <p>Couleurs, impressions, autocollants : votre packaging se distingue de celui des autres.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section features-row">
-        <div className="container">
-          <div className="grid grid-4">
-            {features.map((f) => (
-              <div className="feature-item" key={f.title}>
-                <span className="feature-icon"><f.Icon /></span>
-                <h4>{f.title}</h4>
-                <p>{f.text}</p>
-              </div>
-            ))}
+      {/* ÉTAPES */}
+      <section className="steps">
+        <div className="wrap">
+          <div className="steps-head">
+            <h2>Quatre étapes pour<br />votre <span className="soft">packaging</span> sur mesure</h2>
+            <span className="tag">Comment ça marche</span>
           </div>
-        </div>
-      </section>
-
-      <section className="section solutions-band">
-        <div className="container">
-          <div className="section-heading">
-            <h2>Nos services</h2>
-            <Link to="/services" className="see-all">Voir tous les services →</Link>
-          </div>
-        </div>
-
-        <div className="solutions-scroll" ref={solutionsRef} onScroll={handleSolutionsScroll}>
-          {services.map((s, i) => (
-            <div
-              className={`solution-card ${i === activeSolution ? 'is-active' : ''}`}
-              key={s.n}
-              onMouseEnter={() => setActiveSolution(i)}
-              onFocus={() => setActiveSolution(i)}
-              tabIndex={0}
-            >
-              <div className="solution-card-media">
-                <SiteImage slot={s.slot} label={`Photo — ${s.tag}`} ratio="4 / 3" className="solution-card-img" />
-                <span className="solution-card-number">{s.n}</span>
-              </div>
-              <div className="solution-card-body">
-                <h3>{s.title}<em>{s.em}</em></h3>
-                <span className="solution-card-divider" />
-                <p>{s.text}</p>
-                <Link to="/devis" className="solution-card-btn" aria-label={`Demander un devis — ${s.tag}`}>
-                  <IconArrowRight width={16} height={16} strokeWidth={2} />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="container solutions-nav">
-          <div className="solutions-arrows">
-            <button
-              type="button"
-              className="solutions-arrow"
-              onClick={() => scrollSolutions(-1)}
-              aria-label="Solution précédente"
-            >
-              <IconArrowRight width={16} height={16} strokeWidth={2} className="solutions-arrow-icon" />
-            </button>
-            <button
-              type="button"
-              className="solutions-arrow"
-              onClick={() => scrollSolutions(1)}
-              aria-label="Solution suivante"
-            >
-              <IconArrowRight width={16} height={16} strokeWidth={2} />
-            </button>
-          </div>
-          <div className="solutions-dots">
-            {services.map((s, i) => (
-              <span
-                key={s.n}
-                className={`solutions-dot ${i === activeSolution ? 'is-active' : ''}`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section projects-preview">
-        <div className="container">
-          <div className="section-heading">
-            <h2>Nos réalisations</h2>
-            <Link to="/realisations" className="see-all">Voir tous nos projets →</Link>
-          </div>
-          <div className="grid grid-3" style={{ marginTop: 32 }}>
-            {projets.map((p) => (
-              <div className="realisation-card" key={p.slot}>
-                <SiteImage slot={p.slot} label={`Photo — ${p.title}`} />
-                <div className="realisation-body">
-                  <h3>{p.title}</h3>
-                  <p>{p.description}</p>
+          <div className="tl">
+            {STEPS.map((st) => (
+              <div className={`st ${st.pos}`} key={st.n}>
+                <div className="tx">
+                  <h3><span>{st.n}</span>{st.title}</h3>
+                  <p>{st.text}</p>
                 </div>
               </div>
             ))}
@@ -273,34 +220,59 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <div className="steps-bubble">
-            <h2>Comment ça marche</h2>
-            <div className="grid grid-3 steps-grid">
-              {steps.map((s) => (
-                <div className="step" key={s.n}>
-                  <span className="step-number">{s.n}</span>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
-                </div>
-              ))}
-            </div>
+      {/* SERVICES */}
+      <section id="services">
+        <div className="wrap">
+          <div className="sv-head">
+            <span className="tag">Services</span>
+            <Link to="/services" className="link">Voir tous les services</Link>
+          </div>
+          <div className="svc-cards">
+            {SERVICES.map((s, i) => (
+              <ServiceCard key={s.slot} s={s} active={activeSvc === i} onActivate={() => setActiveSvc(i)} />
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="section cta-section">
-        <div className="container">
-          <div className="cta-card">
-            <h2>Prêt à démarrer<br />votre projet ?</h2>
-            <p>Décrivez votre besoin en quelques minutes, on s'occupe du reste.</p>
-            <Link to="/devis" className="cta-card-btn">
-              Demander un devis <IconArrowRight width={18} height={18} strokeWidth={2} />
-            </Link>
+      {/* RÉALISATIONS */}
+      <section id="realisations">
+        <div className="wrap">
+          <div className="wk-head">
+            <h2>Découvrez nos<br /><span className="soft">dernières</span> réalisations</h2>
+            <span className="tag">Réalisations</span>
+          </div>
+          <div className={`slider ${realisations.length < 2 ? 'single' : ''}`}>
+            <div className="wk-main">
+              {work.src ? (
+                <img src={work.src} alt={work.title} />
+              ) : (
+                <div className="ph"><ImgIcon />Photo à venir</div>
+              )}
+            </div>
+            {realisations.length > 1 && (
+              <div className="next">
+                <div className="ph next-ph" />
+                <button type="button" onClick={() => setWi((v) => (v + 1) % realisations.length)}>SUIVANT</button>
+              </div>
+            )}
+          </div>
+          <div className="meta">
+            <div><small>Projet</small><b>{work.title}</b></div>
+            <div><small>Lieu</small><b>{work.lieu || '—'}</b></div>
+            <p>{work.description}</p>
           </div>
         </div>
       </section>
-    </>
+
+      {/* CTA */}
+      <section className="cta-band">
+        <div className="ph dark" />
+        <div className="wrap">
+          <h2>Prêt à personnaliser votre packaging ?</h2>
+          <Link to="/devis" className="btn btn-light cta-btn">Demander un devis</Link>
+        </div>
+      </section>
+    </div>
   );
 }

@@ -21,6 +21,7 @@ const FIELD_LABELS = {
   budget: 'Budget',
   prioriteBudget: 'Priorité',
   logo: 'Logo sur emballage',
+  entreprise: 'Entreprise',
   couleurs: 'Couleurs à respecter',
   message: 'Message',
 };
@@ -44,37 +45,35 @@ const VIDEO_ALLOWED_SLOTS = new Set(['home-hero']);
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp';
 const IMAGE_OR_VIDEO_ACCEPT = 'image/png,image/jpeg,image/webp,video/mp4,video/webm';
 
-// Emplacements de photos gérables depuis l'admin, groupés par endroit sur le site
+// Emplacements de photos gérables depuis l'admin, groupés par endroit sur le site.
+// Sans photo, le site affiche son visuel par défaut (logo animé, dessins).
 const SITE_IMAGE_GROUPS = [
   {
     section: "Page d'accueil",
     slots: [
       {
         slot: 'home-hero',
-        label: 'Photo ou vidéo du hero (grande photo en haut)',
+        label: 'Fond du hero (grande zone en haut)',
+        fallback: 'Sans photo : fond bordeaux avec le grand logo animé.',
         accept: IMAGE_OR_VIDEO_ACCEPT,
+      },
+      {
+        slot: 'home-valeurs',
+        label: 'Photo de la section « Un emballage qui vous ressemble »',
+        fallback: 'Sans photo : case vide.',
       },
     ],
   },
   {
-    section: 'Nos services (page d\'accueil + page Services)',
+    section: "Nos services (cartes de l'accueil + page Services)",
     slots: [
-      { slot: 'service-cartons-boites', label: 'Cartons & boîtes' },
-      { slot: 'service-sacs-kraft', label: 'Sacs kraft' },
-      { slot: 'service-sacs-plastique', label: 'Sacs plastique' },
-      { slot: 'service-papier-de-soie', label: 'Papier de soie' },
-      { slot: 'service-cartes-remerciement', label: 'Cartes de remerciement / Cartes de visite' },
-      { slot: 'service-autocollants', label: 'Autocollants' },
+      { slot: 'service-packaging', label: 'Packaging personnalisé', fallback: 'Sans photo : dessin de la boîte.' },
+      { slot: 'service-sacs', label: 'Sacs (kraft, plastique, zip)', fallback: 'Sans photo : dessin du sac.' },
+      { slot: 'service-papier-de-soie', label: 'Papier de soie', fallback: 'Sans photo : dessin du papier de soie.' },
+      { slot: 'service-cartes', label: 'Cartes & stickers', fallback: 'Sans photo : dessin des cartes et du sticker.' },
     ],
   },
 ];
-
-// Projets de la page "Réalisations" — gérés dans leur propre onglet admin
-// (photo + titre + description ensemble, pas juste la photo).
-const REALISATION_ADMIN_SLOTS = [1, 2, 3, 4, 5, 6].map((n) => ({
-  slot: `realisation-${n}`,
-  label: `Projet ${n}`,
-}));
 
 function formatDate(iso) {
   try {
@@ -107,10 +106,13 @@ export default function Admin() {
   const [confirmingDelete, setConfirmingDelete] = useState({}); // { [slot]: true } — demande de confirmation avant suppression
   const [imageMime, setImageMime] = useState({}); // { [slot]: mimeType } — pour savoir s'il faut afficher <img> ou <video>
   const [tab, setTab] = useState('devis'); // 'devis' | 'photos' | 'realisations' — sections séparées, pas mélangées
-  const [realisationForm, setRealisationForm] = useState({}); // { [slot]: { title, description } }
-  const [realisationStatus, setRealisationStatus] = useState({}); // { [slot]: 'saving' | 'saved' | 'error' }
+  const [realisations, setRealisations] = useState([]); // [{ id, title, lieu, description, hasImage }]
+  const [realisationStatus, setRealisationStatus] = useState({}); // { [id]: 'saving' | 'saved' | 'error' | 'deleting' }
   const [realisationError, setRealisationError] = useState({});
   const [realisationsLoaded, setRealisationsLoaded] = useState(false);
+  const [newReal, setNewReal] = useState({ title: '', lieu: '', description: '' });
+  const [newRealFile, setNewRealFile] = useState(null);
+  const [newRealStatus, setNewRealStatus] = useState(''); // '' | 'saving' | message d'erreur
 
   async function loadList(withToken) {
     setLoading(true);
@@ -132,7 +134,7 @@ export default function Admin() {
       return true;
     } catch (err) {
       setLoadError(
-        "Impossible de contacter le serveur backend. Vérifiez qu'il est bien lancé (npm start dans le dossier backend)."
+        'Impossible de contacter le serveur. Réessayez dans un instant.'
       );
       return false;
     } finally {
@@ -283,12 +285,9 @@ export default function Admin() {
     try {
       const res = await fetch(`${API_URL}/api/realisations`);
       if (!res.ok) throw new Error('load_failed');
-      const data = await res.json();
-      setRealisationForm(
-        Object.fromEntries(data.map((r) => [r.slot, { title: r.title, description: r.description }]))
-      );
+      setRealisations(await res.json());
     } catch {
-      // silencieux : les valeurs par défaut restent affichées sur le site
+      setLoadError('Impossible de charger les réalisations.');
     } finally {
       setRealisationsLoaded(true);
     }
@@ -301,32 +300,75 @@ export default function Admin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
 
-  const updateRealisationField = (slot, field, value) => {
-    setRealisationForm((prev) => ({ ...prev, [slot]: { ...prev[slot], [field]: value } }));
+  const updateRealisationField = (id, field, value) => {
+    setRealisations((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
   };
 
-  const saveRealisation = async (slot) => {
-    const form = realisationForm[slot] || {};
-    setRealisationStatus((prev) => ({ ...prev, [slot]: 'saving' }));
-    setRealisationError((prev) => ({ ...prev, [slot]: '' }));
+  const authJson = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
+  const addRealisation = async (e) => {
+    e.preventDefault();
+    if (!newReal.title.trim()) {
+      setNewRealStatus('Le titre est requis.');
+      return;
+    }
+    setNewRealStatus('saving');
     try {
-      const res = await fetch(`${API_URL}/api/realisations/${slot}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ title: form.title || '', description: form.description || '' }),
+      const res = await fetch(`${API_URL}/api/realisations`, {
+        method: 'POST',
+        headers: authJson,
+        body: JSON.stringify(newReal),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'save_failed');
-      setRealisationStatus((prev) => ({ ...prev, [slot]: 'saved' }));
+      if (!res.ok) throw new Error(data.error || "L'ajout a échoué.");
+      setRealisations((prev) => [...prev, data]);
+      if (newRealFile) {
+        await uploadSiteImage(data.id, newRealFile);
+        setRealisations((prev) => prev.map((r) => (r.id === data.id ? { ...r, hasImage: true } : r)));
+      }
+      setNewReal({ title: '', lieu: '', description: '' });
+      setNewRealFile(null);
+      setNewRealStatus('');
+    } catch (err) {
+      setNewRealStatus(err.message);
+    }
+  };
+
+  const saveRealisation = async (r) => {
+    setRealisationStatus((prev) => ({ ...prev, [r.id]: 'saving' }));
+    setRealisationError((prev) => ({ ...prev, [r.id]: '' }));
+    try {
+      const res = await fetch(`${API_URL}/api/realisations/${r.id}`, {
+        method: 'PUT',
+        headers: authJson,
+        body: JSON.stringify({ title: r.title || '', lieu: r.lieu || '', description: r.description || '' }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "L'enregistrement a échoué.");
+      setRealisationStatus((prev) => ({ ...prev, [r.id]: 'saved' }));
       setTimeout(() => {
-        setRealisationStatus((prev) => (prev[slot] === 'saved' ? { ...prev, [slot]: undefined } : prev));
+        setRealisationStatus((prev) => (prev[r.id] === 'saved' ? { ...prev, [r.id]: undefined } : prev));
       }, 2000);
     } catch (err) {
-      setRealisationStatus((prev) => ({ ...prev, [slot]: 'error' }));
-      setRealisationError((prev) => ({
-        ...prev,
-        [slot]: err.message === 'save_failed' ? "L'enregistrement a échoué." : err.message,
-      }));
+      setRealisationStatus((prev) => ({ ...prev, [r.id]: 'error' }));
+      setRealisationError((prev) => ({ ...prev, [r.id]: err.message }));
+    }
+  };
+
+  const deleteRealisation = async (id) => {
+    setConfirmingDelete((prev) => ({ ...prev, [`real:${id}`]: false }));
+    setRealisationStatus((prev) => ({ ...prev, [id]: 'deleting' }));
+    try {
+      const res = await fetch(`${API_URL}/api/realisations/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'La suppression a échoué.');
+      setRealisations((prev) => prev.filter((r) => r.id !== id));
+    } catch (err) {
+      setRealisationStatus((prev) => ({ ...prev, [id]: 'error' }));
+      setRealisationError((prev) => ({ ...prev, [id]: err.message }));
     }
   };
 
@@ -407,13 +449,13 @@ export default function Admin() {
         <section className="admin-images">
           <h2>Photos du site</h2>
           <p className="admin-images-hint">
-            La photo remplace automatiquement le visuel sur le site, dès que l'envoi est terminé.
+            La photo remplace automatiquement le visuel sur le site dès que l'envoi est terminé. Supprime-la pour revenir au visuel par défaut (logo animé ou dessin).
           </p>
           {SITE_IMAGE_GROUPS.map(({ section, slots }) => (
             <div className="admin-images-section" key={section}>
               <h3 className="admin-images-section-title">{section}</h3>
               <div className="admin-images-grid">
-                {slots.map(({ slot, label, accept }) => {
+                {slots.map(({ slot, label, accept, fallback }) => {
                   const fileUrl = `${API_URL}/api/site-images/${slot}/file${
                     imageVersion[slot] ? `?v=${imageVersion[slot]}` : ''
                   }`;
@@ -485,6 +527,7 @@ export default function Admin() {
                             </span>
                           )}
                         </div>
+                        {fallback && <p className="admin-images-hint" style={{ margin: 0 }}>{fallback}</p>}
                         {VIDEO_ALLOWED_SLOTS.has(slot) && (
                           <p className="admin-images-hint" style={{ margin: 0 }}>
                             Accepte aussi une vidéo courte (MP4/WebM, 30 Mo max) — elle sera lue en
@@ -506,99 +549,104 @@ export default function Admin() {
         <section className="admin-images">
           <h2>Réalisations</h2>
           <p className="admin-images-hint">
-            Complète la photo, le titre et la description de chaque projet affiché sur la page
-            « Réalisations » du site.
+            Les réalisations s'affichent sur l'accueil (diaporama) et sur la page « Réalisations », dans
+            l'ordre où elles ont été ajoutées. Tant qu'il n'y en a aucune, le site montre la carte de visite BSTP.
           </p>
+
+          <form className="admin-image-card admin-realisation-card admin-realisation-new" onSubmit={addRealisation}>
+            <div className="admin-image-body admin-realisation-body">
+              <h3 className="admin-images-section-title">Ajouter une réalisation</h3>
+              <label className="admin-realisation-field">
+                Titre du projet
+                <input value={newReal.title} onChange={(e) => setNewReal((p) => ({ ...p, title: e.target.value }))} placeholder="ex. Carte de visite entreprise" />
+              </label>
+              <label className="admin-realisation-field">
+                Lieu
+                <input value={newReal.lieu} onChange={(e) => setNewReal((p) => ({ ...p, lieu: e.target.value }))} placeholder="ex. Abidjan, CI" />
+              </label>
+              <label className="admin-realisation-field">
+                Description
+                <textarea rows={3} value={newReal.description} onChange={(e) => setNewReal((p) => ({ ...p, description: e.target.value }))} placeholder="Besoin du client, solution apportée…" />
+              </label>
+              <label className="admin-realisation-field">
+                Photo (facultatif)
+                <input type="file" accept={IMAGE_ACCEPT} onChange={(e) => setNewRealFile(e.target.files?.[0] || null)} />
+              </label>
+              <button type="submit" className="btn btn-primary admin-realisation-save" disabled={newRealStatus === 'saving'}>
+                {newRealStatus === 'saving' ? 'Ajout…' : 'Ajouter'}
+              </button>
+              {newRealStatus && newRealStatus !== 'saving' && <p className="admin-error">{newRealStatus}</p>}
+            </div>
+          </form>
+
+          {realisationsLoaded && realisations.length === 0 && (
+            <p className="admin-empty">Aucune réalisation pour l'instant.</p>
+          )}
+
           <div className="admin-images-grid">
-            {REALISATION_ADMIN_SLOTS.map(({ slot, label }) => {
-              const form = realisationForm[slot] || { title: '', description: '' };
+            {realisations.map((r) => {
+              const slot = r.id;
+              const busy = imageStatus[slot] === 'uploading' || imageStatus[slot] === 'deleting';
               return (
-                <div className="admin-image-card admin-realisation-card" key={slot}>
+                <div className="admin-image-card admin-realisation-card" key={r.id}>
                   <div className="admin-image-preview">
                     <img
                       key={imageVersion[slot] || 'initial'}
                       src={`${API_URL}/api/site-images/${slot}/file${imageVersion[slot] ? `?v=${imageVersion[slot]}` : ''}`}
-                      alt={label}
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                      onLoad={(e) => {
-                        e.currentTarget.style.display = 'block';
-                      }}
+                      alt={r.title}
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      onLoad={(e) => { e.currentTarget.style.display = 'block'; }}
                     />
                   </div>
                   <div className="admin-image-body admin-realisation-body">
                     <div className="admin-image-actions">
                       <label className="btn btn-secondary admin-image-upload">
                         {imageStatus[slot] === 'uploading' ? 'Envoi…' : 'Changer la photo'}
-                        <input
-                          type="file"
-                          accept="image/png,image/jpeg,image/webp"
-                          hidden
-                          disabled={imageStatus[slot] === 'uploading' || imageStatus[slot] === 'deleting'}
-                          onChange={(e) => uploadSiteImage(slot, e.target.files?.[0])}
-                        />
+                        <input type="file" accept={IMAGE_ACCEPT} hidden disabled={busy} onChange={(e) => uploadSiteImage(slot, e.target.files?.[0])} />
                       </label>
-                      {!confirmingDelete[slot] ? (
-                        <button
-                          type="button"
-                          className="btn btn-secondary admin-image-delete"
-                          disabled={imageStatus[slot] === 'uploading' || imageStatus[slot] === 'deleting'}
-                          onClick={() => setConfirmingDelete((prev) => ({ ...prev, [slot]: true }))}
-                        >
-                          {imageStatus[slot] === 'deleting' ? 'Suppression…' : 'Supprimer la photo'}
-                        </button>
-                      ) : (
-                        <span className="admin-image-confirm">
-                          Supprimer ?
-                          <button type="button" className="btn btn-danger" onClick={() => deleteSiteImage(slot)}>
-                            Oui
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={() => setConfirmingDelete((prev) => ({ ...prev, [slot]: false }))}
-                          >
-                            Annuler
-                          </button>
-                        </span>
-                      )}
                     </div>
                     {imageStatus[slot] === 'error' && <p className="admin-error">{imageError[slot]}</p>}
 
                     <label className="admin-realisation-field">
                       Titre du projet
-                      <input
-                        value={form.title}
-                        onChange={(e) => updateRealisationField(slot, 'title', e.target.value)}
-                        placeholder={label}
-                      />
+                      <input value={r.title} onChange={(e) => updateRealisationField(r.id, 'title', e.target.value)} />
+                    </label>
+                    <label className="admin-realisation-field">
+                      Lieu
+                      <input value={r.lieu || ''} onChange={(e) => updateRealisationField(r.id, 'lieu', e.target.value)} placeholder="ex. Abidjan, CI" />
                     </label>
                     <label className="admin-realisation-field">
                       Description
-                      <textarea
-                        value={form.description}
-                        onChange={(e) => updateRealisationField(slot, 'description', e.target.value)}
-                        rows={3}
-                        placeholder="Besoin du client, solution apportée…"
-                      />
+                      <textarea rows={3} value={r.description || ''} onChange={(e) => updateRealisationField(r.id, 'description', e.target.value)} />
                     </label>
 
-                    <button
-                      type="button"
-                      className="btn btn-primary admin-realisation-save"
-                      onClick={() => saveRealisation(slot)}
-                      disabled={realisationStatus[slot] === 'saving'}
-                    >
-                      {realisationStatus[slot] === 'saving'
-                        ? 'Enregistrement…'
-                        : realisationStatus[slot] === 'saved'
-                        ? 'Enregistré ✓'
-                        : 'Enregistrer'}
-                    </button>
-                    {realisationStatus[slot] === 'error' && (
-                      <p className="admin-error">{realisationError[slot]}</p>
-                    )}
+                    <div className="admin-image-actions">
+                      <button
+                        type="button"
+                        className="btn btn-primary admin-realisation-save"
+                        onClick={() => saveRealisation(r)}
+                        disabled={realisationStatus[r.id] === 'saving'}
+                      >
+                        {realisationStatus[r.id] === 'saving' ? 'Enregistrement…' : realisationStatus[r.id] === 'saved' ? 'Enregistré ✓' : 'Enregistrer'}
+                      </button>
+                      {!confirmingDelete[`real:${r.id}`] ? (
+                        <button
+                          type="button"
+                          className="btn btn-secondary admin-image-delete"
+                          disabled={realisationStatus[r.id] === 'deleting'}
+                          onClick={() => setConfirmingDelete((prev) => ({ ...prev, [`real:${r.id}`]: true }))}
+                        >
+                          {realisationStatus[r.id] === 'deleting' ? 'Suppression…' : 'Supprimer'}
+                        </button>
+                      ) : (
+                        <span className="admin-image-confirm">
+                          Supprimer cette réalisation ?
+                          <button type="button" className="btn btn-danger" onClick={() => deleteRealisation(r.id)}>Oui</button>
+                          <button type="button" className="btn btn-secondary" onClick={() => setConfirmingDelete((prev) => ({ ...prev, [`real:${r.id}`]: false }))}>Annuler</button>
+                        </span>
+                      )}
+                    </div>
+                    {realisationStatus[r.id] === 'error' && <p className="admin-error">{realisationError[r.id]}</p>}
                   </div>
                 </div>
               );

@@ -1,28 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600&family=Shippori+Mincho:wght@500;600&display=swap');
 
+/* Palette : Cobblestone, Creme, Ruby, Brownie (fond blanc) */
 :root {
   --white: #FFFFFF;
-  --cream: #F7E4CC;
-  --cream-soft: #FCF3E3;
-  --champagne: #F3D4A8;
-  --peach: #F8AD5C;
-  --gold: #F4A044;
-  --brown: #4A3220;
-  --brown-soft: #8A6C50;
-  --ink: #2B211C;
-  --ink-soft: #241C17;
+  --ruby: #3E1F20;
+  --ruby-soft: #5A3536;
+  --ruby-deep: #2E1617;
+  --brownie: #3E2B24;
+  --cobblestone: #AA9F95;
+  --creme: #D2CDC3;
 
-  /* legacy aliases so existing rules pick up the new palette automatically */
-  --orange: var(--peach);
-  --orange-deep: var(--gold);
-  --rust: var(--gold);
-  --text: #5A514B;
-  --teal: var(--brown);
+  /* Jetons du nouveau design (src/nv.css) */
+  --vanilla: var(--creme);
+  --khaki: var(--ruby);
+  --cerulean: var(--cobblestone);
+  --cream: #EEEBE5;
+  --espresso: var(--brownie);
+  --dusty: #8A7F75;
+  --mauve: #8A7F75;
+  --wood: var(--creme);
+  --sand: #E4E0D8;
+  --ink: #2A1D18;
+  --muted: #7A6F66;
+  --ph: #F5F3EF;
+  --ph-line: var(--cobblestone);
+  --khaki-deep: var(--cobblestone);
+  --on-khaki: #C9C2B8;
+  --glass: rgba(255, 255, 255, .10);
+  --glass-line: rgba(210, 205, 195, .3);
+  --f: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fd: 'Shippori Mincho', 'Hiragino Mincho ProN', Georgia, serif;
+  --r: 6px;
+
+  /* Anciens noms, branchés sur la nouvelle palette : les pages Services,
+     Réalisations, FAQ et l'admin prennent les nouvelles couleurs. */
+  --cream-soft: #F5F3EF;
+  --champagne: #EEEBE5;
+  --peach: var(--ruby);
+  --gold: var(--ruby-soft);
+  --brown: var(--ruby);
+  --brown-soft: #8A7F75;
+  --ink-soft: #2A1D18;
+  --orange: var(--ruby);
+  --orange-deep: var(--ruby-soft);
+  --rust: var(--ruby);
+  --text: var(--brownie);
+  --teal: var(--ruby);
   --teal-dark: var(--ink);
+  --gradient-warm: radial-gradient(120% 140% at 22% 18%, #5A3536 0%, #3E1F20 55%, #2E1617 100%);
 
-  --gradient-warm: radial-gradient(120% 140% at 22% 18%, #FCEFD9 0%, #F8AD5C 32%, #F4A044 56%, #C9531F 80%, #4A3220 100%);
-
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--f);
   color: var(--text);
 }
 
@@ -42,7 +69,8 @@ body {
 }
 
 h1, h2, h3, h4 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--fd);
+  font-weight: 500;
   color: var(--text);
   margin: 0 0 0.5rem 0;
 }
@@ -75,15 +103,15 @@ a {
 }
 
 .btn-primary {
-  background: var(--peach);
-  color: var(--text);
+  background: var(--ruby);
+  color: var(--creme);
 }
 
 .btn-primary:hover,
 .btn-primary:active {
   background: var(--gold);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(248, 173, 92, 0.35);
+  box-shadow: 0 8px 20px rgba(62, 31, 32, 0.25);
 }
 
 .btn-secondary {
@@ -94,8 +122,8 @@ a {
 
 .btn-secondary:hover,
 .btn-secondary:active {
-  background: var(--brown);
-  color: var(--cream);
+  background: var(--ruby);
+  color: var(--creme);
 }
 
 .section {

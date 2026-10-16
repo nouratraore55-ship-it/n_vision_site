@@ -13,10 +13,14 @@ const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replac
 // recevoir une vidéo (ex: le hero) — ça évite un appel réseau
 // supplémentaire (vérification du type de fichier) pour tous les autres
 // emplacements, qui sont toujours des images.
-export default function SiteImage({ slot, label, ratio = '4 / 3', className = '', allowVideo = false }) {
+// `fallback` : ce qu'on affiche s'il n'y a pas de fichier (par défaut, un
+// visuel de remplacement). Ex : le logo animé du hero, ou un dessin de service.
+// `ratio={null}` : l'image remplit son conteneur (pas de proportion imposée).
+export default function SiteImage({ slot, label, ratio = '4 / 3', className = '', allowVideo = false, fallback, version = '' }) {
   const [failed, setFailed] = useState(false);
   const [mimeType, setMimeType] = useState(allowVideo ? null : 'image');
-  const fileUrl = `${API_URL}/api/site-images/${slot}/file`;
+  const fileUrl = `${API_URL}/api/site-images/${slot}/file${version ? `?v=${version}` : ''}`;
+  const style = ratio ? { aspectRatio: ratio } : undefined;
 
   useEffect(() => {
     if (!allowVideo) return;
@@ -40,15 +44,16 @@ export default function SiteImage({ slot, label, ratio = '4 / 3', className = ''
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slot, allowVideo]);
+  }, [slot, allowVideo, version]);
 
   if (failed) {
-    return <PlaceholderImage label={label} ratio={ratio} className={className} />;
+    if (fallback !== undefined) return fallback;
+    return <PlaceholderImage label={label} ratio={ratio || '4 / 3'} className={className} />;
   }
 
   if (allowVideo && mimeType === null) {
     // Vérification du type de fichier en cours — évite un flash d'image cassée.
-    return <div className={`site-img site-img-loading ${className}`} style={{ aspectRatio: ratio }} />;
+    return <div className={`site-img site-img-loading ${className}`} style={style} />;
   }
 
   if (mimeType && mimeType.startsWith('video/')) {
@@ -56,7 +61,7 @@ export default function SiteImage({ slot, label, ratio = '4 / 3', className = ''
       <video
         src={fileUrl}
         className={`site-img ${className}`}
-        style={{ aspectRatio: ratio }}
+        style={style}
         autoPlay
         muted
         loop
@@ -71,7 +76,7 @@ export default function SiteImage({ slot, label, ratio = '4 / 3', className = ''
       src={fileUrl}
       alt={label}
       className={`site-img ${className}`}
-      style={{ aspectRatio: ratio }}
+      style={style}
       onError={() => setFailed(true)}
     />
   );

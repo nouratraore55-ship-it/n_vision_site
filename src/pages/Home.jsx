@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import SiteImage from '../components/SiteImage';
 import { IlluPackaging, IlluSacs, IlluPapier, IlluCartes } from '../components/Illustrations';
 import logoCreme from '../assets/logo-creme.png';
 import realisationBstp from '../assets/realisation-bstp.jpg';
@@ -19,28 +18,28 @@ const ImgIcon = () => (
 
 const SERVICES = [
   {
-    slot: 'service-packaging',
+    id: 'packaging',
     title: ['Packaging', 'personnalisé'],
     chips: ['Votre logo', 'Vos couleurs', 'Vos formats', 'Vos finitions'],
     text: 'Choisissez le support, ajoutez votre identité : nous imprimons votre marque sur tout ce qui accompagne vos produits.',
     Illu: IlluPackaging,
   },
   {
-    slot: 'service-sacs',
+    id: 'sacs',
     title: ['Sacs', '& cartons'],
     chips: ['Kraft', 'Plastique', 'Zip'],
     text: 'Kraft, plastique ou zip, imprimés à votre logo.',
     Illu: IlluSacs,
   },
   {
-    slot: 'service-papier-de-soie',
+    id: 'papier',
     title: ['Papier', 'de soie'],
     chips: ['Motifs', 'Couleurs'],
     text: 'Imprimé à vos motifs et couleurs.',
     Illu: IlluPapier,
   },
   {
-    slot: 'service-cartes',
+    id: 'cartes',
     title: ['Cartes', '& stickers'],
     chips: ['Cartes de visite', 'Cartes de remerciement', 'Stickers'],
     text: 'Cartes de visite, cartes de remerciement et autocollants à votre logo.',
@@ -83,7 +82,7 @@ function ServiceCard({ s, active, onActivate }) {
       onClick={onActivate}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onActivate(); } }}
     >
-      <SiteImage slot={s.slot} label={s.title.join(' ')} ratio={null} className="svc-photo" fallback={<Illu />} />
+      <Illu />
       <div className="ov" />
       <div className="chips">{s.chips.map((c) => <span key={c}>{c}</span>)}</div>
       <Link to="/services" className="arr" aria-label={`Voir le service ${s.title.join(' ')}`} onClick={(e) => e.stopPropagation()}>
@@ -128,7 +127,7 @@ export default function Home() {
       {/* HERO */}
       <header className="hero">
         <div className="ph dark" />
-        <SiteImage slot="home-hero" label="N Vision" ratio={null} allowVideo className="hero-photo" fallback={<HeroFallback />} />
+        <HeroFallback />
         <Navbar overlay />
         <div className="hero-in wrap">
           <div className="hero-body">
@@ -167,13 +166,7 @@ export default function Home() {
             <Link to="/devis" className="btn btn-dark">Demander un devis</Link>
           </div>
           <div className="vals-grid">
-            <SiteImage
-              slot="home-valeurs"
-              label="N Vision"
-              ratio={null}
-              className="vals-photo"
-              fallback={<div className="ph vals-ph"><ImgIcon /></div>}
-            />
+            <div className="ph vals-ph"><ImgIcon /></div>
             <div className="feats">
               <div className="feat">
                 <div className="ico"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z" /></svg></div>
@@ -229,7 +222,7 @@ export default function Home() {
           </div>
           <div className="svc-cards">
             {SERVICES.map((s, i) => (
-              <ServiceCard key={s.slot} s={s} active={activeSvc === i} onActivate={() => setActiveSvc(i)} />
+              <ServiceCard key={s.id} s={s} active={activeSvc === i} onActivate={() => setActiveSvc(i)} />
             ))}
           </div>
         </div>

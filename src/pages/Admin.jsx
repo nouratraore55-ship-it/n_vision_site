@@ -40,40 +40,8 @@ const FILE_KIND_LABELS = {
   photo: 'Photo produit',
 };
 
-// Emplacements qui acceptent aussi une vidéo (fond animé), en plus d'une photo.
-const VIDEO_ALLOWED_SLOTS = new Set(['home-hero']);
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp';
-const IMAGE_OR_VIDEO_ACCEPT = 'image/png,image/jpeg,image/webp,video/mp4,video/webm';
 
-// Emplacements de photos gérables depuis l'admin, groupés par endroit sur le site.
-// Sans photo, le site affiche son visuel par défaut (logo animé, dessins).
-const SITE_IMAGE_GROUPS = [
-  {
-    section: "Page d'accueil",
-    slots: [
-      {
-        slot: 'home-hero',
-        label: 'Fond du hero (grande zone en haut)',
-        fallback: 'Sans photo : fond bordeaux avec le grand logo animé.',
-        accept: IMAGE_OR_VIDEO_ACCEPT,
-      },
-      {
-        slot: 'home-valeurs',
-        label: 'Photo de la section « Un emballage qui vous ressemble »',
-        fallback: 'Sans photo : case vide.',
-      },
-    ],
-  },
-  {
-    section: "Nos services (cartes de l'accueil + page Services)",
-    slots: [
-      { slot: 'service-packaging', label: 'Packaging personnalisé', fallback: 'Sans photo : dessin de la boîte.' },
-      { slot: 'service-sacs', label: 'Sacs (kraft, plastique, zip)', fallback: 'Sans photo : dessin du sac.' },
-      { slot: 'service-papier-de-soie', label: 'Papier de soie', fallback: 'Sans photo : dessin du papier de soie.' },
-      { slot: 'service-cartes', label: 'Cartes & stickers', fallback: 'Sans photo : dessin des cartes et du sticker.' },
-    ],
-  },
-];
 
 function formatDate(iso) {
   try {
@@ -104,7 +72,6 @@ export default function Admin() {
   const [imageError, setImageError] = useState({}); // { [slot]: message }
   const [imageVersion, setImageVersion] = useState({}); // { [slot]: timestamp } — force le rechargement de l'aperçu
   const [confirmingDelete, setConfirmingDelete] = useState({}); // { [slot]: true } — demande de confirmation avant suppression
-  const [imageMime, setImageMime] = useState({}); // { [slot]: mimeType } — pour savoir s'il faut afficher <img> ou <video>
   const [tab, setTab] = useState('devis'); // 'devis' | 'photos' | 'realisations' — sections séparées, pas mélangées
   const [realisations, setRealisations] = useState([]); // [{ id, title, lieu, description, hasImage }]
   const [realisationStatus, setRealisationStatus] = useState({}); // { [id]: 'saving' | 'saved' | 'error' | 'deleting' }
@@ -152,18 +119,6 @@ export default function Admin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Type de fichier (photo ou vidéo) des emplacements qui acceptent une vidéo,
-  // pour savoir quel aperçu afficher (peu d'emplacements concernés, appel léger).
-  useEffect(() => {
-    VIDEO_ALLOWED_SLOTS.forEach((slot) => {
-      fetch(`${API_URL}/api/site-images/${slot}/meta`)
-        .then((res) => (res.ok ? res.json() : Promise.reject()))
-        .then((data) => {
-          if (data.exists) setImageMime((prev) => ({ ...prev, [slot]: data.mimeType }));
-        })
-        .catch(() => {});
-    });
-  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -251,33 +206,9 @@ export default function Admin() {
       if (!res.ok) throw new Error(data.error || 'upload_failed');
       setImageStatus((prev) => ({ ...prev, [slot]: undefined }));
       setImageVersion((prev) => ({ ...prev, [slot]: Date.now() }));
-      if (data.mimeType) setImageMime((prev) => ({ ...prev, [slot]: data.mimeType }));
     } catch (err) {
       setImageStatus((prev) => ({ ...prev, [slot]: 'error' }));
       setImageError((prev) => ({ ...prev, [slot]: err.message === 'upload_failed' ? "L'envoi a échoué." : err.message }));
-    }
-  };
-
-  const deleteSiteImage = async (slot) => {
-    setConfirmingDelete((prev) => ({ ...prev, [slot]: false }));
-    setImageStatus((prev) => ({ ...prev, [slot]: 'deleting' }));
-    setImageError((prev) => ({ ...prev, [slot]: '' }));
-    try {
-      const res = await fetch(`${API_URL}/api/site-images/${slot}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok && res.status !== 404) throw new Error(data.error || 'delete_failed');
-      setImageStatus((prev) => ({ ...prev, [slot]: undefined }));
-      setImageVersion((prev) => ({ ...prev, [slot]: Date.now() }));
-      setImageMime((prev) => ({ ...prev, [slot]: undefined }));
-    } catch (err) {
-      setImageStatus((prev) => ({ ...prev, [slot]: 'error' }));
-      setImageError((prev) => ({
-        ...prev,
-        [slot]: err.message === 'delete_failed' ? "La suppression a échoué." : err.message,
-      }));
     }
   };
 
@@ -432,118 +363,12 @@ export default function Admin() {
           Demandes de devis
         </button>
         <button
-          className={`admin-tab ${tab === 'photos' ? 'admin-tab-active' : ''}`}
-          onClick={() => setTab('photos')}
-        >
-          Photos du site
-        </button>
-        <button
           className={`admin-tab ${tab === 'realisations' ? 'admin-tab-active' : ''}`}
           onClick={() => setTab('realisations')}
         >
           Réalisations
         </button>
       </nav>
-
-      {tab === 'photos' && (
-        <section className="admin-images">
-          <h2>Photos du site</h2>
-          <p className="admin-images-hint">
-            La photo remplace automatiquement le visuel sur le site dès que l'envoi est terminé. Supprime-la pour revenir au visuel par défaut (logo animé ou dessin).
-          </p>
-          {SITE_IMAGE_GROUPS.map(({ section, slots }) => (
-            <div className="admin-images-section" key={section}>
-              <h3 className="admin-images-section-title">{section}</h3>
-              <div className="admin-images-grid">
-                {slots.map(({ slot, label, accept, fallback }) => {
-                  const fileUrl = `${API_URL}/api/site-images/${slot}/file${
-                    imageVersion[slot] ? `?v=${imageVersion[slot]}` : ''
-                  }`;
-                  const isVideo = (imageMime[slot] || '').startsWith('video/');
-                  return (
-                    <div className="admin-image-card" key={slot}>
-                      <div className="admin-image-preview">
-                        {isVideo ? (
-                          <video
-                            key={imageVersion[slot] || 'initial'}
-                            src={fileUrl}
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          <img
-                            key={imageVersion[slot] || 'initial'}
-                            src={fileUrl}
-                            alt={label}
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                            }}
-                            onLoad={(e) => {
-                              e.currentTarget.style.display = 'block';
-                            }}
-                          />
-                        )}
-                      </div>
-                      <div className="admin-image-body">
-                        <span className="admin-image-label">{label}</span>
-                        <div className="admin-image-actions">
-                          <label className="btn btn-secondary admin-image-upload">
-                            {imageStatus[slot] === 'uploading' ? 'Envoi…' : 'Changer la photo'}
-                            <input
-                              type="file"
-                              accept={accept || IMAGE_ACCEPT}
-                              hidden
-                              disabled={imageStatus[slot] === 'uploading' || imageStatus[slot] === 'deleting'}
-                              onChange={(e) => uploadSiteImage(slot, e.target.files?.[0])}
-                            />
-                          </label>
-                          {!confirmingDelete[slot] ? (
-                            <button
-                              type="button"
-                              className="btn btn-secondary admin-image-delete"
-                              disabled={imageStatus[slot] === 'uploading' || imageStatus[slot] === 'deleting'}
-                              onClick={() => setConfirmingDelete((prev) => ({ ...prev, [slot]: true }))}
-                            >
-                              {imageStatus[slot] === 'deleting' ? 'Suppression…' : 'Supprimer la photo'}
-                            </button>
-                          ) : (
-                            <span className="admin-image-confirm">
-                              Supprimer ?
-                              <button type="button" className="btn btn-danger" onClick={() => deleteSiteImage(slot)}>
-                                Oui
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={() => setConfirmingDelete((prev) => ({ ...prev, [slot]: false }))}
-                              >
-                                Annuler
-                              </button>
-                            </span>
-                          )}
-                        </div>
-                        {fallback && <p className="admin-images-hint" style={{ margin: 0 }}>{fallback}</p>}
-                        {VIDEO_ALLOWED_SLOTS.has(slot) && (
-                          <p className="admin-images-hint" style={{ margin: 0 }}>
-                            Accepte aussi une vidéo courte (MP4/WebM, 30 Mo max) — elle sera lue en
-                            boucle, sans son.
-                          </p>
-                        )}
-                        {imageStatus[slot] === 'error' && <p className="admin-error">{imageError[slot]}</p>}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </section>
-      )}
 
       {tab === 'realisations' && (
         <section className="admin-images">

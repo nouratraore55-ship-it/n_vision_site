@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import SiteImage from '../components/SiteImage';
 import { IlluPackaging, IlluSacs, IlluPapier, IlluCartes } from '../components/Illustrations';
 import './Services.css';
 
@@ -61,7 +60,7 @@ export default function Services() {
             {services.map((s) => (
               <div className="card service-card" key={s.title}>
                 <div className="service-visual">
-                  <SiteImage slot={s.slot} label={`Photo — ${s.title}`} ratio={null} className="service-photo" fallback={<s.Illu />} />
+                  <s.Illu />
                 </div>
                 <div className="service-card-body">
                   <h3>{s.title}</h3>
